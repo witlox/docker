@@ -1,5 +1,8 @@
-FROM ubuntu:16.04
+FROM phusion/baseimage
 MAINTAINER Pim Witlox (pim.witlox@uzh.ch)
+
+# Use baseimage-docker's init system.
+CMD ["/sbin/my_init"]
 
 # Intall JAVA8
 RUN apt-get update 
@@ -57,6 +60,7 @@ COPY yarn-site.xml $HADOOP_CONF/yarn-site.xml
 
 # Configure Spark
 RUN cp $SPARK_HOME/conf/log4j.properties.template $SPARK_HOME/conf/log4j.properties
+RUN cp $SPARK_HOME/conf/metrics.properties.template $SPARK_HOME/conf/metrics.properties
 RUN sed -i -e s/WARN/ERROR/g $SPARK_HOME/conf/log4j.properties && sed -i -e s/INFO/ERROR/g $SPARK_HOME/conf/log4j.properties
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
@@ -83,4 +87,3 @@ EXPOSE 49707 2122
 EXPOSE 4040 8080 8081 18080
 
 ONBUILD CMD ["hdfs"]
-
