@@ -6,22 +6,31 @@ CMD ["/sbin/my_init"]
 
 # Intall JAVA8 and other dependencies
 RUN apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk wget libsnappy-dev libssl-dev openssh-server ssh rsync
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk wget libsnappy-dev libssl-dev openssh-server ssh rsync netcat-openbsd python
+
+# Preliminary
+COPY debs/bigtop-utils_1.2.0-1_all.deb /tmp/bigtop-utils_1.2.0-1_all.deb
+COPY debs/bigtop-jsvc_1.0.15-1_amd64.deb /tmp/bigtop-jsvc_1.0.15-1_amd64.deb
+COPY debs/bigtop-groovy_2.4.4-1_all.deb /tmp/bigtop-groovy_2.4.4-1_all.deb
+COPY debs/zookeeper_3.4.6-1_all.deb /tmp/zookeeper_3.4.6-1_all.deb
+
+RUN dpkg -i /tmp/bigtop-utils_1.2.0-1_all.deb
+RUN dpkg -i /tmp/bigtop-jsvc_1.0.15-1_amd64.deb
+RUN dpkg -i /tmp/bigtop-groovy_2.4.4-1_all.deb
+RUN dpkg -i /tmp/zookeeper_3.4.6-1_all.deb
 
 # Hadoop
 COPY debs/hadoop_2.7.3-1_amd64.deb /tmp/hadoop_2.7.3-1_amd64.deb
-COPY debs/hadoop-client_2.7.3-1_amd64.deb /tmp/hadoop-client_2.7.3-1_amd64.deb
 COPY debs/hadoop-hdfs_2.7.3-1_amd64.deb /tmp/hadoop-hdfs_2.7.3-1_amd64.deb
-COPY debs/hadoop-hdfs-fuse_2.7.3-1_amd64.deb /tmp/hadoop-hdfs-fuse_2.7.3-1_amd64.deb
-COPY debs/hadoop-mapreduce_2.7.3-1_amd64.deb /tmp/hadoop-mapreduce_2.7.3-1_amd64.deb
 COPY debs/hadoop-yarn_2.7.3-1_amd64.deb /tmp/hadoop-yarn_2.7.3-1_amd64.deb
+COPY debs/hadoop-mapreduce_2.7.3-1_amd64.deb /tmp/hadoop-mapreduce_2.7.3-1_amd64.deb
+COPY debs/hadoop-client_2.7.3-1_amd64.deb /tmp/hadoop-client_2.7.3-1_amd64.deb
 
 RUN dpkg -i /tmp/hadoop_2.7.3-1_amd64.deb
-RUN dpkg -i /tmp/hadoop-client_2.7.3-1_amd64.deb
 RUN dpkg -i /tmp/hadoop-hdfs_2.7.3-1_amd64.deb
-RUN dpkg -i /tmp/hadoop-hdfs-fuse_2.7.3-1_amd64.deb
-RUN dpkg -i /tmp/hadoop-mapreduce_2.7.3-1_amd64.deb
 RUN dpkg -i /tmp/hadoop-yarn_2.7.3-1_amd64.deb
+RUN dpkg -i /tmp/hadoop-mapreduce_2.7.3-1_amd64.deb
+RUN dpkg -i /tmp/hadoop-client_2.7.3-1_amd64.deb
 
 # Scala
 ARG SCALA_VERSION=2.12.1
@@ -73,8 +82,6 @@ COPY core-site.xml $HADOOP_CONF/conf/core-site.xml
 COPY hdfs-site.xml $HADOOP_CONF/conf/hdfs-site.xml
 COPY mapred-site.xml $HADOOP_CONF/conf/mapred-site.xml
 COPY yarn-site.xml $HADOOP_CONF/conf/yarn-site.xml
-# Rewrite host-name
-sed s/hostname/$HOSTNAME/ $HADOOP_CONF/conf/core-site.xml > $HADOOP_CONF/conf/core-site.xml
 
 # Configure Spark
 RUN cp $SPARK_HOME/conf/log4j.properties.template $SPARK_CONF/conf/log4j.properties
@@ -84,13 +91,6 @@ COPY spark-defaults.conf $SPARK_CONF/conf/spark-defaults.conf
 
 # Shuffle service
 RUN cp $SPARK_HOME/yarn/*.jar $HADOOP_YARN_HOME/lib/
-
-# Format HDFS
-RUN mkdir -p /data/dfs/data /data/dfs/name /data/dfs/namesecondary
-RUN hdfs namenode -format
-
-# Mount point for Data
-VOLUME /data
 
 # HDFS ports
 EXPOSE 50010 50020 50070 50075 50090
