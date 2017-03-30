@@ -3,7 +3,7 @@ MAINTAINER Pim Witlox (pim.witlox@uzh.ch)
 
 # Intall JAVA8
 RUN apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk wget libsnappy-dev libssl-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk wget libsnappy-dev libssl-dev openssh-server
 
 # Hadoop
 ARG HADOOP_VERSION=2.7.3
