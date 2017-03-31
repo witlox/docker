@@ -1,0 +1,138 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: spark-hadoop-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: spark-hadoop-master
+  template:
+    metadata:
+      labels:
+        component: spark-hadoop-master
+    spec:
+      containers:
+        - name: spark-hadoop-master
+          image: witlox/namenode
+          command: ["hdfs"]
+          ports:
+            - containerPort: 2122
+            - containerPort: 4040
+            - containerPort: 8030
+            - containerPort: 8081
+            - containerPort: 8031
+            - containerPort: 8032
+            - containerPort: 8033
+            - containerPort: 8040
+            - containerPort: 8042
+            - containerPort: 8088
+            - containerPort: 18080
+            - containerPort: 49707
+            - containerPort: 50010
+            - containerPort: 50020
+            - containerPort: 50070
+            - containerPort: 50075
+            - containerPort: 50090
+          resources:
+            requests:
+              cpu: 100m
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: hadoop-yarn-ui
+  namespace: spark-hadoop-cluster
+spec:
+  ports:
+    - port: 8088
+      targetPort: 8088
+  selector:
+    component: spark-hadoop-master
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: spark-ui
+  namespace: spark-hadoop-cluster
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    component: spark-hadoop-master
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: spark-history-ui
+  namespace: spark-hadoop-cluster
+spec:
+  ports:
+    - port: 18080
+      targetPort: 18080
+  selector:
+    component: spark-hadoop-master
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: spark-agent-ui
+  namespace: spark-hadoop-cluster
+spec:
+  ports:
+    - port: 4040
+      targetPort: 4040
+  selector:
+    component: spark-hadoop-worker
+
+---
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: spark-worker-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: spark-hadoop-worker
+  template:
+    metadata:
+      labels:
+        component: spark-hadoop-worker
+    spec:
+      containers:
+        - name: spark-hadoop-worker
+          image: witlox/datanode
+          command: ["hdfs"]
+          ports:
+            - containerPort: 2122
+            - containerPort: 4040
+            - containerPort: 8030
+            - containerPort: 8081
+            - containerPort: 8031
+            - containerPort: 8032
+            - containerPort: 8033
+            - containerPort: 8040
+            - containerPort: 8042
+            - containerPort: 8088
+            - containerPort: 18080
+            - containerPort: 49707
+            - containerPort: 50010
+            - containerPort: 50020
+            - containerPort: 50070
+            - containerPort: 50075
+            - containerPort: 50090
+          resources:
+            requests:
+              cpu: 100m
+

@@ -1,6 +1,9 @@
 FROM witlox/hadoop-spark-base
 MAINTAINER Pim Witlox (pim.witlox@uzh.ch)
 
+# Rewrite host-name
+RUN sed s/hostname/$HOSTNAME/ $HADOOP_CONF/conf/core-site.xml > $HADOOP_CONF/conf/core-site.xml
+
 # Hadoop namenode
 COPY debs/hadoop-hdfs-namenode_2.7.3-1_amd64.deb /tmp/hadoop-hdfs-namenode_2.7.3-1_amd64.deb
 COPY debs/hadoop-hdfs-secondarynamenode_2.7.3-1_amd64.deb /tmp/hadoop-hdfs-secondarynamenode_2.7.3-1_amd64.deb
@@ -24,4 +27,11 @@ RUN service hadoop-hdfs-namenode start
 RUN service hadoop-hdfs-secondarynamenode start
 RUN service hadoop-mapreduce-historyserver start
 RUN service hadoop-yarn-resourcemanager start
+
+# Format HDFS
+RUN hdfs namenode -format
+
+# Create Spark History folder
+RUN hdfs dfs -mkdir -p /user/spark/applicationHistory
+
 RUN service spark-history-server start

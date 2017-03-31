@@ -1,12 +1,8 @@
-FROM phusion/baseimage
+FROM ubuntu:16.04
 MAINTAINER Pim Witlox (pim.witlox@uzh.ch)
 
-# Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]
-
 # Intall JAVA8 and other dependencies
-RUN apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk wget libsnappy-dev libssl-dev openssh-server ssh rsync netcat-openbsd python
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jdk wget libsnappy-dev libssl-dev openssh-server ssh rsync netcat-openbsd python
 
 # Preliminary
 COPY debs/bigtop-utils_1.2.0-1_all.deb /tmp/bigtop-utils_1.2.0-1_all.deb
@@ -70,11 +66,7 @@ ENV SPARK_CONF		/etc/spark
 ENV PATH		$PATH:JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SCALA_HOME/bin:$SBT_HOME/bin:$SPARK_HOME/bin:$SPARK_HOME/sbin
 
 # cleanup
-RUN apt-get remove -y wget
-RUN apt-get clean
-RUN apt-get purge
-RUN rm -rf /tmp/*
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get remove -y wget && apt-get clean && apt-get purge && rm -rf /tmp/* && rm -rf /var/lib/apt/lists/*
 
 # Overwrite default configuration files with our config files
 COPY capacity-scheduler.xml $HADOOP_CONF/conf/capacity-scheduler.xml
