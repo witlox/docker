@@ -21,11 +21,7 @@
 
 	<property>
 		<name>yarn.resourcemanager.hostname</name>
-		<value>yarn</value>
-	</property>
-	<property>
-		<name>yarn.nodemanager.hostname</name>
-		<value>yarn</value>
+		<value>HOSTNAME</value>
 	</property>
 	<property>
 		<name>yarn.resourcemanager.scheduler.class</name>

@@ -6,7 +6,39 @@
 		<value>yarn</value>
 	</property>
 	<property>
+	    <name>mapreduce.jobhistory.address</name>
+	    <value>HOSTNAME:10020</value>
+	</property>
+	<property>
+		<name>mapreduce.jobhistory.webapp.address</name>
+		<value>HOSTNAME:18080</value>
+	</property>
+	<property>
 		<name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
 		<value>1</value>
+	</property>
+	<property>
+		<name>yarn.app.mapreduce.am.resource.mb</name>
+		<value>4043</value>
+	</property>
+	<property>
+		<name>yarn.app.mapreduce.am.command-opts</name>
+		<value>-Xmx3234m</value>
+	</property>
+	<property>
+		<name>mapreduce.map.memory.mb</name>
+		<value>3234</value>
+	</property>
+	<property>
+		<name>mapreduce.map.java.opts</name>
+		<value>-Xmx2587m</value>
+	</property>
+	<property>
+		<name>mapreduce.reduce.memory.mb</name>
+		<value>8087</value>
+	</property>
+	<property>
+		<name>mapreduce.reduce.java.opts</name>
+		<value>-Xmx6469m</value>
 	</property>
 </configuration>
